@@ -1,0 +1,4 @@
+---
+- name: Update default hostname
+  ansible.builtin.debug:
+    var: hostvars
