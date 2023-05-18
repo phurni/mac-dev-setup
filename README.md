@@ -26,6 +26,16 @@ Having `git`, clone the repo and run the script:
     cd ~ && git clone https://github.com/phurni/mac-dev-setup.git && cd mac-dev-setup
     ./bootstrap_ansible
 
+### playbook
+
+All other software installs and configuration is done through the `ansible` playbook `main.yml`.
+Modify this file at your discretion to choose what to do and with which data.
+
+After each change to the `main.yml` file, run:
+
+    cd ~/mac-dev-setup
+    ansible-playbook main.yml
+
 ## Manual steps
 
 Usually there's no need for manual steps before running the scripts.
