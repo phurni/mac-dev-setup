@@ -3,7 +3,7 @@
 
   pre_tasks:
     - name: Install dockutil
-      community.general.homwbrew:
+      community.general.homebrew:
         name: lotyp/formulae/dockutil
 
   tasks:
