@@ -9,14 +9,14 @@
   tasks:
     - name: Browsers
       block:
-        - name: Install
+        - name: Browsers - Install
           community.general.homebrew_cask:
             name:
               - brave-browser
               - vivaldi
               - google-chrome
               - firefox
-        - name: Dock
+        - name: Browsers - Dock
           dock-util:
             add:
               - hbc:google-chrome
@@ -27,7 +27,7 @@
 
     - name: Utils
       block:
-        - name: Install
+        - name: Utils - Install
           community.general.homebrew_cask:
             name:
               - path-finder
@@ -37,11 +37,11 @@
 
     - name: Office
       block:
-        - name: Install
+        - name: Office - Install
           community.general.homebrew:
             name:
               - davmail
-        - name: Install
+        - name: Office - Install
           community.general.homebrew_cask:
             name:
               - thunderbird
@@ -51,7 +51,7 @@
 
     - name: Others
       block:
-        - name: Install
+        - name: Others - Install
           community.general.homebrew_cask:
             name:
               - discord
@@ -61,7 +61,7 @@
 
     - name: Dev
       block:
-        - name: Install
+        - name: Dev - Install
           community.general.homebrew_cask:
             name:
               - iterm2
@@ -72,7 +72,7 @@
               - vmware-fusion
               - apache-directory-studio
               - pycharm-ce
-        - name: Install
+        - name: Dev - Install
           community.general.homebrew:
             name:
               - docker
