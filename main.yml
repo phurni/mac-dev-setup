@@ -1,4 +1,7 @@
 ---
 - hosts: all
-  roles:
-    - debug-show-vars
+
+  pre_tasks:
+    - name: Install dockutil
+      community.general.homwbrew:
+        name: lotyp/formulae/dockutil

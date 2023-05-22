@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+# WANT_JSON
+
+# Reference: https://github.com/ansible/ansible-for-rubyists
+
+require 'json'
+
+puts JSON.dump({})
