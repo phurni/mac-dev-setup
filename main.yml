@@ -5,3 +5,22 @@
     - name: Install dockutil
       community.general.homwbrew:
         name: lotyp/formulae/dockutil
+
+  tasks:
+    - name: Browsers
+      block:
+        - name: Install
+          community.general.homebrew_cask:
+            name:
+              - brave-browser
+              - vivaldi
+              - google-chrome
+              - firefox
+        - name: Dock
+          dock-util:
+            add:
+              - hbc:google-chrome
+              - hbc:vivaldi
+              - hbc:brave-browser
+            after: Launchpad
+      ignore_errors: true
