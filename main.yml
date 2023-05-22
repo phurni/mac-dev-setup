@@ -24,3 +24,55 @@
               - hbc:brave-browser
             after: Launchpad
       ignore_errors: true
+
+    - name: Utils
+      block:
+        - name: Install
+          community.general.homebrew_cask:
+            name:
+              - path-finder
+              - forklift
+              - superduper
+              - standard-notes
+
+    - name: Office
+      block:
+        - name: Install
+          community.general.homebrew:
+            name:
+              - davmail
+        - name: Install
+          community.general.homebrew_cask:
+            name:
+              - thunderbird
+              - gimp
+              - paintbrush
+              - libreoffice
+
+    - name: Others
+      block:
+        - name: Install
+          community.general.homebrew_cask:
+            name:
+              - discord
+              - teamviewer
+              - vlc
+              - sonic-pi
+
+    - name: Dev
+      block:
+        - name: Install
+          community.general.homebrew_cask:
+            name:
+              - iterm2
+              - textmate
+              - visual-studio-code
+              - sequel-ace
+              - hex-fiend
+              - vmware-fusion
+              - apache-directory-studio
+              - pycharm-ce
+        - name: Install
+          community.general.homebrew:
+            name:
+              - docker
