@@ -53,6 +53,12 @@
               - forklift
               - superduper
               - standard-notes
+        - name: Utils - Dock
+          dock-util:
+            add:
+              - hbc:forklift
+              - hbc:path-finder
+            after: Launchpad
 
     - name: Office
       block:
@@ -67,6 +73,11 @@
               - gimp
               - paintbrush
               - libreoffice
+        - name: Office - Dock
+          dock-util:
+            add:
+              - hbc:thunderbird
+            after: hbc:forklift
 
     - name: Others
       block:
@@ -77,6 +88,10 @@
               - teamviewer
               - vlc
               - sonic-pi
+        - name: Others - Dock
+          dock-util:
+            add:
+              - hbc:discord
 
     - name: Dev
       block:
@@ -95,3 +110,12 @@
           community.general.homebrew:
             name:
               - docker
+        - name: Dev - Dock
+          dock-util:
+            add:
+              - hbc:iterm2
+              - hbc:textmate
+              - hbc:visual-studio-code
+              - hbc:sequel-ace
+              - hbc:vmware-fusion
+            after: hbc:brave-browser
