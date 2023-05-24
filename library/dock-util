@@ -70,6 +70,14 @@ class Dockutil
     @items_to_remove << DockItem.new(name)
   end
 
+  def after(name)
+    @after = DockItem.new(name)
+  end
+
+  def before(name)
+    @before = DockItem.new(name)
+  end
+
   def run
     current_items = list
     items_to_add = @items_to_add - current_items
@@ -81,6 +89,8 @@ class Dockutil
     cli_args = []
     cli_args.concat(items_to_remove.map {|item|  "-r #{item.path.shellescape}" })
     cli_args.concat(items_to_add.map {|item| "-a #{item.path.shellescape}" })
+    cli_args << "--after #{@after.label.shellescape}" if @after
+    cli_args << "--before #{@before.label.shellescape}" if @before
     `dockutil #{cli_args.join(' ')}`
     $?.success?
   end
@@ -99,6 +109,10 @@ inputs = JSON.parse(File.read(ARGV[0]))
 dockutil = Dockutil.new
 Array(inputs['add']).each {|name| dockutil.add(name) }
 Array(inputs['remove']).each {|name| dockutil.remove(name) }
+after = inputs['after']
+before = inputs['before']
+dockutil.after(after) if after
+dockutil.before(before) if before
 success = dockutil.run
 
 puts JSON.dump({failed: !success, changed: dockutil.changes.size > 0})
