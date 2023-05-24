@@ -113,9 +113,9 @@
         - name: Dev - Dock
           dock-util:
             add:
-              - hbc:iterm2
-              - hbc:textmate
-              - hbc:visual-studio-code
-              - hbc:sequel-ace
               - hbc:vmware-fusion
+              - hbc:sequel-ace
+              - hbc:visual-studio-code
+              - hbc:textmate
+              - hbc:iterm2
             after: hbc:brave-browser
