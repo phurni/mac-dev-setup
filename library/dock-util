@@ -4,5 +4,101 @@
 # Reference: https://github.com/ansible/ansible-for-rubyists
 
 require 'json'
+require 'cgi'
+require 'shellwords'
 
-puts JSON.dump({})
+def app_name_from_homebrew_cask(cask_name)
+  output = `brew info --cask --json=v2 #{cask_name}`
+  cask_data = JSON.parse(output)
+  cask_data.dig('casks', 0, 'artifacts', 0, 'app', 0)
+  if bundle_name = cask_data.dig('casks', 0, 'artifacts').find {|artifact| artifact.dig('app') }&.dig('app', 0)
+    ["/Applications/#{bundle_name}", bundle_name.delete_suffix('.app')]
+  end
+rescue
+  nil
+end
+
+ITEM_NAME_MAPPERS = {
+  /^hbc:(.+)/ => method(:app_name_from_homebrew_cask)
+}
+
+DockItem = Struct.new(:path, :label) do |item_class|
+  def initialize(*args)
+    if args.size == 1
+      super(*(File.exist?(args.first) ? [args.first, File.basename(args.first, '.*')] : expand_from_name(args.first)))
+    else
+      super
+    end
+  end
+
+  def eql?(other)
+    return false unless other.is_a? self.class
+    return path.eql?(other.path) if path && other.path
+    return label.eql?(other.label) if label && other.label
+    super
+  end
+  def ==(other)
+    return false unless other.is_a? self.class
+    return path == other.path if path && other.path
+    return label == other.label if label && other.label
+    super
+  end
+  def hash
+    path.nil? ? label.hash : path.hash
+  end
+
+  protected def expand_from_name(name)
+    _, callable = ITEM_NAME_MAPPERS.find {|regexp, _| regexp =~ name }
+    args = callable.call(Regexp.last_match(1)) if callable
+    args || [nil, name]
+  end
+end
+
+class Dockutil
+  attr_reader :changes
+
+  def initialize
+    @items_to_add = []
+    @items_to_remove = []
+  end
+
+  def add(name)
+    @items_to_add << DockItem.new(name)
+  end
+
+  def remove(name)
+    @items_to_remove << DockItem.new(name)
+  end
+
+  def run
+    current_items = list
+    items_to_add = @items_to_add - current_items
+    items_to_remove = current_items.select {|item| @items_to_remove.include?(item) }  # can't use Array#& because the #hash may be different for DockItem with only :label
+
+    @changes = items_to_add + items_to_remove
+    return true if @changes.empty?
+
+    cli_args = []
+    cli_args.concat(items_to_remove.map {|item|  "-r #{item.path.shellescape}" })
+    cli_args.concat(items_to_add.map {|item| "-a #{item.path.shellescape}" })
+    `dockutil #{cli_args.join(' ')}`
+    $?.success?
+  end
+
+  def list
+    lines = `dockutil -L`.split("\n")
+    lines.map do |line|
+      label, url = line.split("\t").first(2)
+      DockItem.new(CGI.unescape(URI.parse(url).path).chomp('/'), label)
+    end
+  end
+end
+
+inputs = JSON.parse(File.read(ARGV[0]))
+
+dockutil = Dockutil.new
+Array(inputs['add']).each {|name| dockutil.add(name) }
+Array(inputs['remove']).each {|name| dockutil.remove(name) }
+success = dockutil.run
+
+puts JSON.dump({failed: !success, changed: dockutil.changes.size > 0})
