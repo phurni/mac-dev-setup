@@ -106,10 +106,21 @@
               - vmware-fusion
               - apache-directory-studio
               - pycharm-ce
+              - android-studio
+              - flutter
+        - name: Dev - Settings - flutter telemetry
+          ansible.builtin.lineinfile:
+            path: "{{ ansible_facts.user_dir }}/.dart-tool/dart-flutter-telemetry.config"
+            create: true
+            regexp: "^reporting="
+            line: "reporting=0"
         - name: Dev - Install
           community.general.homebrew:
             name:
+              - wget
               - docker
+              - mariadb
+              - sqlite
         - name: Dev - Dock
           dock-util:
             add:
