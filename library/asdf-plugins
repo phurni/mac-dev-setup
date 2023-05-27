@@ -1,0 +1,63 @@
+#!/usr/bin/env ruby
+# WANT_JSON
+
+# Reference: https://github.com/ansible/ansible-for-rubyists
+
+require 'json'
+require 'shellwords'
+
+inputs = JSON.parse(File.read(ARGV[0]))
+plugins = Array(inputs['plugins'])
+
+# Get the list of installed plugin once and fail early if no asdf
+installed_plugins = `asdf plugin list`.split("\n")
+unless $?.success?
+  puts JSON.dump({failed: true, msg: "Can't list installed asdf plugins, is asdf available in the default shell?"})
+  exit 1
+end
+
+changed = false
+error_messages = []
+plugins.each do |plugin|
+  # install plugin if not already installed
+  unless installed_plugins.include? plugin['name']
+    `asdf plugin-add #{plugin['name'].shellescape} #{plugin['repository']&.shellescape}`
+    unless $?.success?
+      error_messages << "Error while installing plugin #{plugin['name']}"
+      next
+    end
+    changed = true
+  end
+
+  # list installed versions
+  installed_versions = `asdf list #{plugin['name'].shellescape}`.split("\n")
+  current_global_version = installed_versions.grep(/^\s*\*/) {|version| version.sub(/^\s*\*?/, '') }.first
+  installed_versions.map! {|version| version.sub(/^\s*\*?/, '') }
+
+  # install missing versions
+  (Array(plugin['versions']).map(&:to_s) - installed_versions).each do |version|
+    `asdf install #{plugin['name'].shellescape} #{version.shellescape}`
+    unless $?.success?
+      error_messages << "Error while installing #{plugin['name']} version #{version}"
+      next
+    end
+    installed_versions << version
+    changed = true
+  end
+
+  # set the global version
+  if (global_version = plugin['global']) && current_global_version != plugin['global']
+    if installed_versions.include? global_version.to_s
+      `asdf global #{plugin['name'].shellescape} #{global_version.to_s.shellescape}`
+      if $?.success?
+        changed = true
+      else
+        error_messages << "Error while setting global version of #{plugin['name']} to #{version}"
+      end
+    else
+      error_messages << "Can't set global version for #{plugin['name']} to #{global_version} because it is not installed"
+    end
+  end
+end
+
+puts JSON.dump({failed: !error_messages.empty?, changed: changed, msg: error_messages.join("\n")})
