@@ -130,3 +130,24 @@
               - hbc:textmate
               - hbc:iterm2
             after: hbc:brave-browser
+        - name: Dev - Install languages
+          asdf-plugins:
+            plugins:
+              - name: ruby
+                repository: https://github.com/asdf-vm/asdf-ruby.git
+                versions:
+                  - "2.1.9"
+                  - "2.6.5"
+                  - "3.2.2"
+                global: "3.2.2"
+              - name: php
+                repository: https://github.com/asdf-community/asdf-php.git
+                versions:
+                  - "8.2.6"
+                  - "7.4.33"
+                global: "8.2.6"
+              - name: nodejs
+                repository: https://github.com/asdf-vm/asdf-nodejs.git
+                versions:
+                  - "18.16.0"
+                global: "18.16.0"
