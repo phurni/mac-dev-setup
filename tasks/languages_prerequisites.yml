@@ -1,0 +1,11 @@
+---
+- name: Languages prerequisites - PHP - Check
+  ansible.builtin.shell:
+    cmd: php -v
+  register: languages_prerequisites_php
+  ignore_errors: true
+  changed_when: false
+- name: Languages prerequisites - PHP - Install
+  community.general.homebrew:
+    name: autoconf,automake,bison,freetype,gd,gettext,icu4c,krb5,libedit,libiconv,libjpeg,libpng,libsodium,libxml2,libzip,oniguruma,openssl@1.1,pkg-config,re2c,zlib
+  when: languages_prerequisites_php is failed

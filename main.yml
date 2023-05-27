@@ -130,6 +130,8 @@
               - hbc:textmate
               - hbc:iterm2
             after: hbc:brave-browser
+        - name: Dev - Languages prerequisites
+          include_tasks: tasks/languages_prerequisites.yml
         - name: Dev - Install languages
           asdf-plugins:
             plugins:
